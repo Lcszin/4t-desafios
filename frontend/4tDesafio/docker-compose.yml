@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Serviço do Frontend (Angular)
+  frontend:
+    build: .
+    container_name: 4tech-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # Serviço do Backend (JSON Server simulado)
+  backend:
+    image: node:22-alpine
+    container_name: 4tech-backend
+    working_dir: /data
+    # Monta o arquivo db.json local para dentro do container
+    volumes:
+      - ./db.json:/data/db.json
+    # Instala e roda o json-server na hora
+    command: sh -c "npm install -g json-server && json-server --watch db.json --host 0.0.0.0 --port 3000"
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
