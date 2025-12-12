@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PlanoListComponent } from '../../planos/plano-list/plano-list.component';
-import { PlanoFormComponent } from '../../planos/plano-form/plano-form.component';
+import { PlanoListComponent } from '../../pages/planos/plano-list/plano-list.component';
+import { PlanoFormComponent } from '../../pages/planos/plano-form/plano-form.component';
 
 const routes: Routes = [
   { path: '', component: PlanoListComponent },

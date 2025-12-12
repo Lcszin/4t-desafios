@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { PlanosRoutingModule } from './planos-routing-module';
 import { PlanosComponent } from './planos.component';
-import { PlanoListComponent } from '../../planos/plano-list/plano-list.component';
-import { PlanoFormComponent } from '../../planos/plano-form/plano-form.component';
+import { PlanoListComponent } from '../../pages/planos/plano-list/plano-list.component';
+import { PlanoFormComponent } from '../../pages/planos/plano-form/plano-form.component';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { PlanoFormComponent } from '../../planos/plano-form/plano-form.component
   ],
   imports: [
     CommonModule,
-    PlanosRoutingModule
+    PlanosRoutingModule,
+    ReactiveFormsModule
   ]
 })
 export class PlanosModule { }

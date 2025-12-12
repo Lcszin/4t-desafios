@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PlanoFormComponent } from './plano-form.component';
+import { Home } from './home.component';
 
-describe('PlanoForm', () => {
-  let component: PlanoFormComponent;
-  let fixture: ComponentFixture<PlanoFormComponent>;
+describe('Home', () => {
+  let component: Home;
+  let fixture: ComponentFixture<Home>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PlanoFormComponent]
+      declarations: [Home]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PlanoFormComponent);
+    fixture = TestBed.createComponent(Home);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

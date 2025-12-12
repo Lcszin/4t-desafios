@@ -1,0 +1,81 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary fw-bold">Beneficiários</h2>
+    <a routerLink="/beneficiarios/novo" class="btn btn-primary shadow-sm">
+      <i class="bi bi-person-plus-fill me-2"></i>Novo Beneficiário
+    </a>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body bg-light rounded-3">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-bold text-secondary">Status</label>
+          <select class="form-select" [(ngModel)]="filtroStatus" (change)="filtrar()">
+            <option value="Todos">Todos</option>
+            <option value="ATIVO">Ativo</option>
+            <option value="INATIVO">Inativo</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold text-secondary">Plano</label>
+          <select class="form-select" [(ngModel)]="filtroPlano" (change)="filtrar()">
+            <option value="">Todos os Planos</option>
+            @for (plano of planos; track plano.id) {
+              <option [value]="plano.id">{{ plano.nome }}</option>
+            }
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive rounded-3">
+      <table class="table table-hover table-striped align-middle mb-0">
+        <thead class="table-primary text-uppercase fs-7">
+          <tr>
+            <th>Nome Completo</th>
+            <th>CPF</th>
+            <th>Data Nasc.</th>
+            <th class="text-center">Status</th>
+            <th>Plano</th>
+            <th class="text-end pe-4">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (b of beneficiarios; track b.id) {
+            <tr>
+              <td class="fw-medium">{{ b.nome_completo }}</td>
+              <td>{{ b.cpf }}</td>
+              <td>{{ b.data_nascimento | date:'dd/MM/yyyy' }}</td>
+              <td class="text-center">
+                @if (b.status === 'ATIVO') {
+                  <span class="badge bg-success rounded-pill">ATIVO</span>
+                } @else {
+                  <span class="badge bg-danger rounded-pill">INATIVO</span>
+                }
+              </td>
+              <td>{{ b.plano?.nome || '—' }}</td>
+              <td class="text-end">
+                <a [routerLink]="['/beneficiarios/editar', b.id]" class="btn btn-sm btn-outline-warning me-2" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <button (click)="deletarBeneficiario(b.id!)" class="btn btn-sm btn-outline-danger" title="Excluir">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                Nenhum beneficiário encontrado.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

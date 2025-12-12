@@ -1,0 +1,78 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white py-3">
+          <h4 class="mb-0 fw-bold">{{ isEdicao ? 'Editar' : 'Novo' }} Beneficiário</h4>
+        </div>
+        
+        <div class="card-body p-4">
+          <form [formGroup]="form" (ngSubmit)="salvar()">
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Nome Completo</label>
+              <input type="text" formControlName="nome_completo" class="form-control"
+                     [class.is-invalid]="f['nome_completo'].invalid && f['nome_completo'].touched">
+              
+              @if (f['nome_completo'].invalid && f['nome_completo'].touched) {
+                <div class="invalid-feedback">
+                  Nome é obrigatório.
+                </div>
+              }
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">CPF</label>
+              <input type="text" formControlName="cpf" class="form-control" placeholder="000.000.000-00"
+                     [class.is-invalid]="f['cpf'].invalid && f['cpf'].touched">
+              @if (f['cpf'].invalid && f['cpf'].touched) {
+                <div class="invalid-feedback">CPF é obrigatório.</div>
+              }
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Data de Nascimento</label>
+                <input type="date" formControlName="data_nascimento" class="form-control"
+                       [class.is-invalid]="f['data_nascimento'].invalid && f['data_nascimento'].touched">
+                @if (f['data_nascimento'].invalid && f['data_nascimento'].touched) {
+                  <div class="invalid-feedback">Data obrigatória.</div>
+                }
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Plano de Saúde</label>
+                <select formControlName="plano_id" class="form-select"
+                        [class.is-invalid]="f['plano_id'].invalid && f['plano_id'].touched">
+                  <option value="" disabled>Selecione...</option>
+                  @for (plano of listaPlanos; track plano.id) {
+                    <option [value]="plano.id">{{ plano.nome }}</option>
+                  }
+                </select>
+                @if (f['plano_id'].invalid && f['plano_id'].touched) {
+                  <div class="invalid-feedback">Selecione um plano.</div>
+                }
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-bold">Status</label>
+              <select formControlName="status" class="form-select">
+                <option value="ATIVO">ATIVO</option>
+                <option value="INATIVO">INATIVO</option>
+              </select>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-light border" (click)="cancelar()">Cancelar</button>
+              <button type="submit" class="btn btn-primary px-4" [disabled]="form.invalid">
+                {{ isEdicao ? 'Atualizar' : 'Salvar' }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

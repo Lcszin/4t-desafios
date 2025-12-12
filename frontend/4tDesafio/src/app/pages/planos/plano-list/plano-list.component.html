@@ -1,0 +1,51 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-primary fw-bold">Planos de Saúde</h2>
+    <a routerLink="/planos/novo" class="btn btn-primary shadow-sm">
+      <i class="bi bi-plus-lg me-2"></i>Novo Plano
+    </a>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive rounded-3">
+      <table class="table table-hover table-striped align-middle mb-0">
+        <thead class="table-primary text-uppercase fs-7">
+          <tr>
+            <th class="ps-4">ID</th>
+            <th>Nome do Plano</th>
+            <th>Código ANS</th>
+            <th class="text-end pe-4">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (plano of planos; track plano.id) {
+            <tr>
+              <td class="ps-4 fw-bold text-secondary">#{{ plano.id }}</td>
+              <td class="fw-medium">{{ plano.nome }}</td>
+              <td>
+                <span class="badge bg-light text-dark border">
+                  {{ plano.codigo_registro_ans }}
+                </span>
+              </td>
+              <td class="text-end pe-4">
+                <a [routerLink]="['/planos/editar', plano.id]" class="btn btn-sm btn-outline-warning me-2" title="Editar">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <button (click)="deletarPlano(plano.id!)" class="btn btn-sm btn-outline-danger" title="Excluir">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="text-center py-5 text-muted">
+                <i class="bi bi-clipboard-x fs-1 d-block mb-2"></i>
+                Nenhum plano cadastrado.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
