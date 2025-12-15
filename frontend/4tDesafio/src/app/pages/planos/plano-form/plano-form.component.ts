@@ -47,7 +47,7 @@ export class PlanoFormComponent {
         });
       },
       error: () => {
-        alert('Erro ao carregar plano.');
+        this.mostrarErro('Erro ao carregar plano.');
         this.router.navigate(['/planos']);
       }
     });
@@ -71,7 +71,7 @@ export class PlanoFormComponent {
             showConfirmButton: false
           }).then(() => this.router.navigate(['/planos']));
         },
-        error: () => Swal.fire('Erro', 'Erro ao atualizar plano.', 'error')
+        error: () => this.mostrarErro('Erro ao atualizar plano.')
       });
     } else {
       this.planoService.createPlano(plano).subscribe({
@@ -86,12 +86,16 @@ export class PlanoFormComponent {
         this.router.navigate(['/planos']);
       });
     },
-    error: () => Swal.fire('Erro', 'Erro ao salvar plano', 'error')
+    error: () => this.mostrarErro('Erro ao salvar plano')
   });
     }
   }
 
   cancelar(): void {
     this.router.navigate(['/planos']);
+  }
+
+  private mostrarErro(mensagem: string) {
+    Swal.fire('Erro!', mensagem, 'error');
   }
 }

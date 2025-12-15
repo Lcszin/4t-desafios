@@ -39,7 +39,7 @@ export class BeneficiarioListComponent implements OnInit {
       next: (dados) => {
         this.beneficiarios = dados;
       },
-      error: () => alert('Erro ao buscar beneficiários.')
+      error: () => this.mostrarErro('Erro ao buscar beneficiários.')
     });
   }
 
@@ -60,7 +60,7 @@ export class BeneficiarioListComponent implements OnInit {
             this.beneficiarios = this.beneficiarios.filter(b => b.id !== id);
             Swal.fire('Excluído!', 'O beneficiário foi removido.', 'success');
           },
-          error: () => Swal.fire('Erro!', 'Erro ao excluir beneficiário.', 'error')
+          error: () => this.mostrarErro('Erro ao excluir beneficiário.')
         });
       }
     });
@@ -69,4 +69,8 @@ export class BeneficiarioListComponent implements OnInit {
   filtrar(): void {
     this.buscarBeneficiarios();
   }
+
+  private mostrarErro(mensagem: string) {
+      Swal.fire('Erro!', mensagem, 'error');
+    }
 }

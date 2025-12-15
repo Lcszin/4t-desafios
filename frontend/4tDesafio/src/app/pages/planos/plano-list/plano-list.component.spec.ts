@@ -1,9 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { PlanoListComponent } from './plano-list.component';
 import { PlanoService } from '../../../services/plano.service';
 import { Plano } from '../../../models/plano.model';
+import Swal from 'sweetalert2';
 
 describe('PlanoListComponent', () => {
   let component: PlanoListComponent;
@@ -25,6 +26,7 @@ describe('PlanoListComponent', () => {
         { provide: PlanoService, useValue: planoServiceSpy }
       ]
     }).compileComponents();
+    
     planoServiceSpy.getPlanos.and.returnValue(of(listaMock));
 
     fixture = TestBed.createComponent(PlanoListComponent);
@@ -42,24 +44,26 @@ describe('PlanoListComponent', () => {
     expect(component.planos).toEqual(listaMock);
   });
 
-  it('deve chamar deletePlano e atualizar a lista ao confirmar exclusão', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
-    
+  it('deve chamar deletePlano e atualizar a lista ao confirmar no SweetAlert', fakeAsync(() => {
+    spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as any));
     planoServiceSpy.deletePlano.and.returnValue(of(void 0));
     
     component.deletarPlano(1);
+    
+    tick();
 
     expect(planoServiceSpy.deletePlano).toHaveBeenCalledWith(1);
     expect(component.planos.length).toBe(1);
     expect(component.planos[0].id).toBe(2);
-  });
+  }));
 
-  it('NÃO deve chamar deletePlano se o usuário cancelar a confirmação', () => {
-    spyOn(window, 'confirm').and.returnValue(false);
+  it('NÃO deve chamar deletePlano se cancelar no SweetAlert', fakeAsync(() => {
+    spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: false } as any));
 
     component.deletarPlano(1);
+    tick();
 
     expect(planoServiceSpy.deletePlano).not.toHaveBeenCalled();
     expect(component.planos.length).toBe(2);
-  });
+  }));
 });

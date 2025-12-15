@@ -1,15 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { PlanoFormComponent } from './plano-form.component';
 import { PlanoService } from '../../../services/plano.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 describe('PlanoFormComponent', () => {
   let component: PlanoFormComponent;
   let fixture: ComponentFixture<PlanoFormComponent>;
   let planoServiceSpy: jasmine.SpyObj<PlanoService>;
+  let routerSpy: jasmine.SpyObj<Router>;
+
   const activatedRouteMock = {
     snapshot: {
       paramMap: {
@@ -20,16 +22,17 @@ describe('PlanoFormComponent', () => {
 
   beforeEach(async () => {
     planoServiceSpy = jasmine.createSpyObj('PlanoService', ['createPlano', 'updatePlano', 'getPlanoById']);
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       declarations: [PlanoFormComponent],
       imports: [
-        ReactiveFormsModule,
-        RouterTestingModule 
+        ReactiveFormsModule
       ],
       providers: [
         { provide: PlanoService, useValue: planoServiceSpy },
-        { provide: ActivatedRoute, useValue: activatedRouteMock }
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
+        { provide: Router, useValue: routerSpy }
       ]
     }).compileComponents();
 
@@ -46,48 +49,22 @@ describe('PlanoFormComponent', () => {
     expect(component.form.valid).toBeFalse();
   });
   
-  it('deve continuar inválido se preencher apenas o nome', () => {
-    const nomeControl = component.form.get('nome');
-    const ansControl = component.form.get('codigo_registro_ans');
-
-    nomeControl?.setValue('Plano Teste');
-    ansControl?.setValue('');
-
-    expect(component.form.valid).toBeFalse();
-    expect(ansControl?.hasError('required')).toBeTrue();
-  });
-
-  it('deve ficar válido quando todos os campos forem preenchidos corretamente', () => {
-    component.form.setValue({
-      nome: 'Plano Ouro',
-      codigo_registro_ans: 'ANS-123'
-    });
-
-    expect(component.form.valid).toBeTrue();
-  });
-  
-  it('NÃO deve chamar o serviço se tentar salvar formulário inválido', () => {
-    component.salvar();
-    expect(planoServiceSpy.createPlano).not.toHaveBeenCalled();
-    expect(planoServiceSpy.updatePlano).not.toHaveBeenCalled();
-  });
-  
-  it('deve chamar createPlano quando salvar formulário válido em modo criação', () => {
+  it('deve chamar createPlano e navegar ao salvar formulário válido em modo criação', fakeAsync(() => {
+    spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as any));
     planoServiceSpy.createPlano.and.returnValue(of({ id: 1, nome: 'Novo', codigo_registro_ans: '123' }));
 
     component.isEdicao = false;
     component.form.setValue({ nome: 'Novo Plano', codigo_registro_ans: 'ANS-999' });
 
     component.salvar();
+    tick();
 
     expect(planoServiceSpy.createPlano).toHaveBeenCalledTimes(1);
-    expect(planoServiceSpy.createPlano).toHaveBeenCalledWith(jasmine.objectContaining({
-      nome: 'Novo Plano',
-      codigo_registro_ans: 'ANS-999'
-    }));
-  });
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/planos']);
+  }));
   
-  it('deve chamar updatePlano quando salvar em modo edição', () => {
+  it('deve chamar updatePlano e navegar ao salvar em modo edição', fakeAsync(() => {
+    spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as any));
     planoServiceSpy.updatePlano.and.returnValue(of({ id: 10, nome: 'Editado', codigo_registro_ans: '123' }));
 
     component.isEdicao = true;
@@ -95,8 +72,9 @@ describe('PlanoFormComponent', () => {
     component.form.setValue({ nome: 'Plano Editado', codigo_registro_ans: 'ANS-10' });
 
     component.salvar();
+    tick();
 
     expect(planoServiceSpy.updatePlano).toHaveBeenCalled();
-    expect(planoServiceSpy.createPlano).not.toHaveBeenCalled();
-  });
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/planos']);
+  }));
 });

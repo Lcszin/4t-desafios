@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormsModule } from '@angular/forms';
 import { of } from 'rxjs';
@@ -7,6 +7,7 @@ import { BeneficiarioService } from '../../../services/beneficiario.service';
 import { PlanoService } from '../../../services/plano.service';
 import { Beneficiario } from '../../../models/beneficiario.model';
 import { Plano } from '../../../models/plano.model';
+import Swal from 'sweetalert2';
 
 describe('BeneficiarioListComponent', () => {
   let component: BeneficiarioListComponent;
@@ -60,14 +61,16 @@ describe('BeneficiarioListComponent', () => {
     expect(beneficiarioServiceSpy.getBeneficiarios).toHaveBeenCalledWith('INATIVO', 2);
   });
 
-  it('deve excluir beneficiário se confirmado', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
+  it('deve excluir beneficiário se confirmado no SweetAlert', fakeAsync(() => {
+    // Mock do Swal para clicar em "Sim"
+    spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as any));
     beneficiarioServiceSpy.deleteBeneficiario.and.returnValue(of(void 0));
 
     component.deletarBeneficiario(1);
+    tick();
 
     expect(beneficiarioServiceSpy.deleteBeneficiario).toHaveBeenCalledWith(1);
     expect(component.beneficiarios.length).toBe(1);
     expect(component.beneficiarios[0].id).toBe(2);
-  });
+  }));
 });

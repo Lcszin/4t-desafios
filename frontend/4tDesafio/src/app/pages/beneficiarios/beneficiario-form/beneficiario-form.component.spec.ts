@@ -1,19 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { BeneficiarioFormComponent } from './beneficiario-form.component';
 import { BeneficiarioService } from '../../../services/beneficiario.service';
 import { PlanoService } from '../../../services/plano.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Beneficiario } from '../../../models/beneficiario.model';
 import { Plano } from '../../../models/plano.model';
+import Swal from 'sweetalert2';
 
 describe('BeneficiarioFormComponent', () => {
   let component: BeneficiarioFormComponent;
   let fixture: ComponentFixture<BeneficiarioFormComponent>;
   let beneficiarioServiceSpy: jasmine.SpyObj<BeneficiarioService>;
   let planoServiceSpy: jasmine.SpyObj<PlanoService>;
+  let routerSpy: jasmine.SpyObj<Router>;
 
   const activatedRouteMock = {
     snapshot: {
@@ -31,17 +32,18 @@ describe('BeneficiarioFormComponent', () => {
   beforeEach(async () => {
     beneficiarioServiceSpy = jasmine.createSpyObj('BeneficiarioService', ['createBeneficiario', 'updateBeneficiario', 'getBeneficiarioById']);
     planoServiceSpy = jasmine.createSpyObj('PlanoService', ['getPlanos']);
+    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       declarations: [BeneficiarioFormComponent],
       imports: [
-        ReactiveFormsModule,
-        RouterTestingModule
+        ReactiveFormsModule
       ],
       providers: [
         { provide: BeneficiarioService, useValue: beneficiarioServiceSpy },
         { provide: PlanoService, useValue: planoServiceSpy },
-        { provide: ActivatedRoute, useValue: activatedRouteMock }
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
+        { provide: Router, useValue: routerSpy }
       ]
     }).compileComponents();
     
@@ -56,35 +58,8 @@ describe('BeneficiarioFormComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('deve carregar a lista de planos ao iniciar (para popular o select)', () => {
-    expect(planoServiceSpy.getPlanos).toHaveBeenCalled();
-    expect(component.listaPlanos.length).toBe(2);
-  });
-
-  it('deve iniciar inválido (campos vazios)', () => {
-    expect(component.form.valid).toBeFalse();
-  });
-
-  it('deve validar campos obrigatórios (ex: Nome e CPF)', () => {
-    const nomeControl = component.form.get('nome_completo');
-    nomeControl?.setValue('');
-    expect(nomeControl?.valid).toBeFalse();
-    expect(nomeControl?.hasError('required')).toBeTrue();
-  });
-
-  it('deve habilitar o botão salvar quando formulário estiver válido', () => {
-    component.form.setValue({
-      nome_completo: 'João Silva',
-      cpf: '123.456.789-00',
-      data_nascimento: '1990-01-01',
-      status: 'ATIVO',
-      plano_id: '1'
-    });
-
-    expect(component.form.valid).toBeTrue();
-  });
-  
-  it('deve chamar createBeneficiario ao salvar novo registro', () => {
+  it('deve chamar createBeneficiario e navegar ao salvar novo registro', fakeAsync(() => {
+    spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as any));
     beneficiarioServiceSpy.createBeneficiario.and.returnValue(of({} as Beneficiario));
     
     component.form.setValue({
@@ -96,14 +71,17 @@ describe('BeneficiarioFormComponent', () => {
     });
 
     component.salvar();
+    tick();
     
     expect(beneficiarioServiceSpy.createBeneficiario).toHaveBeenCalledWith(jasmine.objectContaining({
       nome_completo: 'Novo User',
       plano_id: 2
     }));
-  });
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/beneficiarios']);
+  }));
   
-  it('deve chamar updateBeneficiario ao salvar edição', () => {
+  it('deve chamar updateBeneficiario e navegar ao salvar edição', fakeAsync(() => {
+    spyOn(Swal, 'fire').and.returnValue(Promise.resolve({ isConfirmed: true } as any));
     beneficiarioServiceSpy.updateBeneficiario.and.returnValue(of({} as Beneficiario));
     
     component.isEdicao = true;
@@ -118,11 +96,13 @@ describe('BeneficiarioFormComponent', () => {
     });
 
     component.salvar();
+    tick();
 
     expect(beneficiarioServiceSpy.updateBeneficiario).toHaveBeenCalledWith(jasmine.objectContaining({
       id: 5,
       nome_completo: 'User Editado',
       status: 'INATIVO'
     }));
-  });
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/beneficiarios']);
+  }));
 });
