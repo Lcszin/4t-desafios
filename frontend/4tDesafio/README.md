@@ -1,59 +1,68 @@
-# 4tDesafio
+# Gestão de Planos e Beneficiários (Desafio Front-End)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.6.
+**Autor:** Lucas Pinheiro Olhê Borges
 
-## Development server
+Este projeto é uma **Single Page Application (SPA)** desenvolvida em **Angular 20**, focada no gerenciamento de beneficiários e planos de saúde. O objetivo é demonstrar competências em arquitetura front-end, consumo de APIs REST, formulários reativos e componentização.
 
-To start a local development server, run:
+## Tecnologias e Decisões Técnicas
 
-```bash
-ng serve
-```
+A aplicação foi construída visando escalabilidade, manutenibilidade e experiência do usuário.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+* **Core:** Angular v20 (Arquitetura modular baseada em NgModules, conforme requisitos).
+* **Estilização:** Bootstrap 5 + SCSS (Agilidade no layout e responsividade) e Bootstrap Icons.
+* **Feedback/UX:** SweetAlert2 (Alertas e confirmações de ações destrutivas amigáveis).
+* **Roteamento:** Angular Router (Lazy Loading implementado para otimização de bundle).
+* **Formulários:** Reactive Forms (Validações complexas e tipagem segura).
+* **API Mock:** JSON-Server (Simulação completa de uma API RESTful).
+* **Containerização:** Docker & Docker Compose (Ambiente de execução padronizado).
 
-## Code scaffolding
+### Destaques da Implementação
+* **Abstração de Services:** Comunicação HTTP isolada e tipada, removendo lógica de negócio dos componentes.
+* **Filtros Server-Side:** A listagem utiliza parâmetros de query (`status` e `plano_id`) para filtrar dados diretamente na "API", otimizando o tráfego.
+* **Tratamento de Erros:** Feedback visual claro em caso de falhas de comunicação com o backend.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Pré-requisitos
 
-```bash
-ng generate component component-name
-```
+Para execução local (sem Docker):
+* [Node.js](https://nodejs.org/) (v18+)
+* [Angular CLI](https://github.com/angular/angular-cli) (v19+)
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-```bash
-ng generate --help
-```
+## Como executar o projeto
 
-## Building
+### Opção 1: Rodando via Docker (Recomendado)
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Se possuir o Docker instalado, execute todo o ambiente (Front + API) com um único comando:
 
 ```bash
-ng test
+# Na raiz do projeto
+docker-compose up --build
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Aplicação: https://localhost:4200
+API: http://localhost:3000
+## Opção 2: Rodando Manualmente
+**1. Clone o repositório e instale as dependências:**
 
 ```bash
-ng e2e
+git clone https://github.com/Lcszin/4t-desafios.git
+cd 4t-desafios/frontend/4tDesafio
+npm install
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+**2. Execute a API Mock (Terminal 1):**
 
-## Additional Resources
+```bash
+npm run api
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+**3. Inicie a Aplicação (Terminal 2):**
+
+```bash
+npm start
+```
+## Testes
+Para executar a suíte de testes unitários (Jasmine/Karma):
+
+```bash
+npm test
+```
